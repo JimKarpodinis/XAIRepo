@@ -13,6 +13,7 @@ from matplotlib import pyplot as plt
 from skimage import io
 
 def read_image_from_url(img_url):
+
     img = io.imread(img_url)
     img = Image.fromarray(img)
     return img
@@ -75,6 +76,33 @@ class Classifier:
           preds.append([self.classes[idx[i]], float(probs[i])])
       return preds
 
+    @staticmethod
+    def get_preprocess_transform():
+        normalize = trn.Normalize(mean=[0.485, 0.456, 0.406],
+                                        std=[0.229, 0.224, 0.225])     
+        transf = trn.Compose([
+            trn.ToTensor(),
+            normalize
+        ])    
+
+        return transf    
+
+    # Normalize transformed image and to cast to Tensor    
+    
+    def batch_predict(self, images):
+
+        preprocess_transform = self.get_preprocess_transform()
+        batch = torch.stack(tuple(preprocess_transform(i) for i in images), dim=0)
+
+        device = torch.device("cpu")
+        self.model.to(device)
+        batch = batch.to(device)
+        
+        logits = self.model(batch)
+        probs = F.softmax(logits, dim=1)
+        return probs.detach().cpu().numpy()
+
+
 
 if __name__ == '__main__':
 
@@ -85,6 +113,6 @@ if __name__ == '__main__':
     print (f"Image url: {image_url}")
     image = read_image_from_url(image_url)
     plt.imshow(image)
-    print ("Predictions")
+    print("Predictions")
     print(predictor.classify(image_url))
     plt.show()
