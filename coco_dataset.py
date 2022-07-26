@@ -1,5 +1,7 @@
 from random import randint
 from tqdm import tqdm
+from predictor import read_image_from_url
+import requests
 '''
 This python script contains the custom coco dataset class, used for holding images and their annotations!
 '''
@@ -85,6 +87,15 @@ class COCO:
             for object in self.coco[id]['label_texts']:
                 index = self.unique_objects[object]
                 self.coco[id]['bow'][index] += 1
+
+    def clean_urls(self):
+        #cleans the data from images that simply dont have the url anymore!
+        #note this takes quite a while if you have bad internet connection!
+        for id in tqdm([*self.coco.keys()]):
+            url = self.coco[id]['url']
+            response = requests.get(url)
+            if response.status_code != 200:
+                del self.coco[id]
 
 if __name__ == '__main__':
 

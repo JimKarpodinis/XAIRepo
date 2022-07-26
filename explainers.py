@@ -17,7 +17,7 @@ import requests
 
 # Import dependencies
 
-def get_pil_transform(): 
+def get_pil_transform():
     transf = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.CenterCrop(224)
@@ -25,15 +25,15 @@ def get_pil_transform():
 
     return transf
 
-    # Transform PIL image 
+    # Transform PIL image
 
 def lime_explainer(img, clf, pill_transf = get_pil_transform()):
     explainer = lime_image.LimeImageExplainer()
 
-    explanation = explainer.explain_instance(np.array(pill_transf(img)), 
+    explanation = explainer.explain_instance(np.array(pill_transf(img)),
                                             clf.batch_predict, # classification function
-                                            top_labels=5, 
-                                            hide_color=0, 
+                                            top_labels=5,
+                                            hide_color=0,
                                             num_samples=1000) # number of images that will be sent to classification function
 
 
@@ -44,13 +44,13 @@ def saliency_explainer(img, clf, pill_transf=get_pil_transform()):
     #we don't need gradients w.r.t. weights for a trained model
     for param in clf.model.parameters():
         param.requires_grad = False
-    
+
     #transoform input PIL image to torch.Tensor and normalize
     input = transforms.ToTensor()(pill_transf(img))
     input.unsqueeze_(0)
 
     #we want to calculate gradient of higest score w.r.t. input
-    #so set requires_grad to True for input 
+    #so set requires_grad to True for input
     input.requires_grad = True
     #forward pass to calculate predictions
     preds = clf.model.forward(input)
@@ -110,16 +110,16 @@ if __name__ == "__main__":
             has_error = False
 
         except HTTPError:
-            pass 
-    
+            pass
+
     clf = Classifier("resnet18")
     explanation_lime = lime_explainer(actual_image, clf)
     print(clf.classify(img_url)[0][0])
 
-    # temp, mask = explanation_lime.get_image_and_mask(explanation_lime.top_labels[0], positive_only=False, num_features=10, hide_rest=False)
-    # img_boundry1 = mark_boundaries(temp/255.0, mask, outline_color = [250.0, 20.0, 5.0])
-    # plt.imshow(img_boundry1)
-    # plt.show()
+    temp, mask = explanation_lime.get_image_and_mask(explanation_lime.top_labels[0], positive_only=False, num_features=10, hide_rest=False)
+    img_boundry1 = mark_boundaries(temp/255.0, mask, outline_color = [250.0, 20.0, 5.0])
+    plt.imshow(img_boundry1)
+    plt.show()
 
     saliency = saliency_explainer(actual_image, clf)
 
