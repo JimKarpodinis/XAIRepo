@@ -35,16 +35,20 @@ class COCO:
         print ("Loading Coco Metadata")
         for ann in tqdm(self.json_data["annotations"]): #for each image, it creates a list with annotated objects
             if ann["image_id"] not in anns_per_image:
-                anns_per_image[ann["image_id"]] = {"label_ids": [ann["category_id"]], "label_texts": [self.categories[ann["category_id"]]["name"]]}
+                anns_per_image[ann["image_id"]] = {"label_ids": [ann["category_id"]], 
+                                        "label_texts": [self.categories[ann["category_id"]]["name"]],
+                                        "bboxes": [ann["bbox"]]}
             else:
                 anns_per_image[ann["image_id"]]["label_ids"].append(ann["category_id"])
                 anns_per_image[ann["image_id"]]["label_texts"].append(self.categories[ann["category_id"]]["name"])
+                anns_per_image[ann["image_id"]]["bboxes"].append(ann["bbox"])
 
         # we join categories with the main dict of imgs
         for im_id in list(self.coco):
             if im_id in anns_per_image:
                 self.coco[im_id]["label_ids"] = anns_per_image[im_id]["label_ids"]
                 self.coco[im_id]["label_texts"] = anns_per_image[im_id]["label_texts"]
+                self.coco[im_id]["bboxes"] = anns_per_image[im_id]["bboxes"]
             else:
                 self.coco.pop(im_id, None) # αν δεν έχουμε annotations σβήνουμε το key αυτό
 
