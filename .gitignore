@@ -1,1 +1,12 @@
 annotations/
+.DS_Store
+__pycache__/
+experiment.py
+.ipynb_checkpoints/
+*.nt
+*.zip
+*.txt
+*.jpeg
+*.tar
+*.pdf
+*.html
