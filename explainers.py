@@ -78,6 +78,13 @@ def visualize_saliency(slc, img, pill_transf=get_pil_transform()):
     plt.yticks([])
     plt.show()
 
+def similarity(explainer_1, explainer_2):
+
+
+    norm_expl1 = nn.functional.normalize(explainer_1.float(), dim = 0)
+    norm_expl2 = nn.functional.normalize(explainer_2, dim=0)
+
+    return norm_expl1 @ norm_expl2
 
 if __name__ == "__main__":
 
@@ -116,11 +123,20 @@ if __name__ == "__main__":
     explanation_lime = lime_explainer(actual_image, clf)
     print(clf.classify(img_url)[0][0])
 
-    temp, mask = explanation_lime.get_image_and_mask(explanation_lime.top_labels[0], positive_only=False, num_features=10, hide_rest=False)
+    temp, mask = explanation_lime.get_image_and_mask(explanation_lime.top_labels[0], positive_only=True, num_features=10, hide_rest=False)
     img_boundry1 = mark_boundaries(temp/255.0, mask, outline_color = [250.0, 20.0, 5.0])
+
+    mask_tensor = torch.from_numpy(mask.flatten())
+
     plt.imshow(img_boundry1)
     plt.show()
 
     saliency = saliency_explainer(actual_image, clf)
+
+    saliency_tensor = saliency.flatten()
+
+    explainer_similarity = similarity(mask_tensor, saliency_tensor)
+
+    print(f"Explainer similarity: {explainer_similarity}")
 
     visualize_saliency(saliency, actual_image)
