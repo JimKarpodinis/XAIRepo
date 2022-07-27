@@ -1,4 +1,6 @@
 annotations/
+saved_dataset/
+saved_labels/
 .DS_Store
 __pycache__/
 experiment.py
@@ -9,4 +11,6 @@ experiment.py
 *.jpeg
 *.tar
 *.pdf
+*.png
+*.dot
 *.html
