@@ -59,7 +59,7 @@ class Ontology:
             #actual object depicted like surfboard, pizza, etc ...
             actual_object = synset.split(".")[0]
 
-            if self.onto[actual_object] in self.onto.classes()
+            if self.onto[actual_object] in self.onto.classes():
                 #if actual_object class has been created,
                 #connect it with the depicted object class using the role is_a
                 obj.is_a.append(self.onto[actual_object])
