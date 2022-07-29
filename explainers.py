@@ -213,8 +213,8 @@ def tree_explainer(dataset, labels, threshold = 60, include_other = False,
 
     tree_.fit(X_train, y_train)
 
-    print(tree_.score(X_train, y_train))
-    print(tree_.score(X_test, y_test))
+    print('Traing accuracy: ',tree_.score(X_train, y_train))
+    print('Testing accuracy: ',tree_.score(X_test, y_test))
 
     return tree_, y_unique
 
@@ -268,37 +268,24 @@ if __name__ == "__main__":
 
     img_url = temp_img["url"]
     img_bboxes = temp_img["bboxes"]
-    actual_img = io.imread(img_url)
+    # actual_img = io.imread(img_url)
 
     lime_bbox_sim = []
     saliency_bbox_sim = []
 
     for box in img_bboxes:
 
-        mask_tmp = (bbox_mask(actual_img.shape[:2], box))
+        mask_tmp = (bbox_mask(actual_image.size[::-1], box))
 
         lime_bbox_sim.append(similarity(mask_tmp.flatten(), lime_tensor))
 
         saliency_bbox_sim.append(similarity(mask_tmp.flatten(), saliency_tensor))
-
-    actual_img = transforms.ToTensor()(get_pil_transform()(im.fromarray(actual_img)))
 
     print(coco.coco[327758]['label_texts'])
 
     print(torch.Tensor(lime_bbox_sim)/torch.sum(torch.Tensor(lime_bbox_sim)))
 
     print(torch.Tensor(saliency_bbox_sim)/torch.sum(torch.Tensor(saliency_bbox_sim)))
-
-    fig = plt.figure(figsize=(10, 10))
-    plt.subplot(1, 2, 1)
-    plt.imshow(actual_img.permute(1, 2, 0))
-    plt.xticks([])
-    plt.yticks([])
-    plt.subplot(1, 2, 2)
-    plt.imshow(mask_tmp, cmap="jet",alpha=0.8)
-    plt.xticks([])
-    plt.yticks([])
-    plt.show()
 
     #tree explainer...
     #calculates bag of words!!!

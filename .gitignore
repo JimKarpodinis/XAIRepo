@@ -1,6 +1,5 @@
 annotations/
 saved_dataset/
-saved_labels/
 .DS_Store
 __pycache__/
 experiment.py
@@ -8,9 +7,5 @@ experiment.py
 *.nt
 *.zip
 *.txt
-*.jpeg
 *.tar
-*.pdf
-*.png
 *.dot
-*.html
